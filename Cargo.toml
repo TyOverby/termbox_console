@@ -1,0 +1,11 @@
+[package]
+
+name = "console_draw_termbox"
+version = "0.0.1"
+authors = ["Ty Overby <ty@pre-alpha.com>"]
+
+[dependencies.termbox]
+git = "https://github.com/TyOverby/rust-termbox.git"
+
+[dependencies.console_draw]
+git = "https://github.com/TyOverby/console_draw.git"
