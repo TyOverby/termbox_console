@@ -1,6 +1,5 @@
 # Termbox Console
-### An implementation of the [`console_draw`](https://github.com/TyOverby/console_draw)
-API using the termbox backend
+#### An implementation of the [`console_draw`](https://github.com/TyOverby/console_draw) API using the termbox backend
 
 If you are thinking of using ncurses, but all you really need is the ability to
 
