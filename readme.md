@@ -3,7 +3,7 @@
 
 If you are thinking of using ncurses, but all you really need is the ability to
 
-1. draw arbitrary chars or strings to the console
+1. draw chars or strings to arbitrary locations on your terminal
 2. get keyboard input events
 3. draw a cursor on the screen
 
