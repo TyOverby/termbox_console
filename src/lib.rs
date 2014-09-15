@@ -6,19 +6,27 @@ use console_draw as cd;
 
 mod trans;
 
-pub struct TermboxConsole {
-    style: tb::Style,
+#[deriving(Copy)]
+struct Style {
+    font_options: tb::Style,
     fg_color: tb::Color,
     bg_color: tb::Color
+}
+pub struct TermboxConsole {
+    current: Style,
+    stack: Vec<Style>
 }
 
 impl TermboxConsole {
     pub fn new() -> TermboxConsole {
         tb::init();
         TermboxConsole {
-            style: tb::Normal,
-            fg_color: tb::White,
-            bg_color: tb::Black
+            current: Style {
+                font_options: tb::Normal,
+                fg_color: tb::White,
+                bg_color: tb::Black
+            },
+            stack: vec![]
         }
     }
 }
@@ -30,32 +38,34 @@ impl Drop for TermboxConsole {
 }
 
 impl cd::ConsoleCanvas for TermboxConsole {
-    fn add_modifier(&mut self, modifier: &cd::Modifier) {
-        match (self.style, *modifier) {
+    fn set(&mut self, modifier: cd::Modifier) {
+        match (self.current.font_options, modifier) {
             (_, cd::TextColor(c)) => {
-                self.fg_color = trans::color(c);
+                self.current.fg_color = trans::color(c);
             }
             (_, cd::BackgroundColor(c)) => {
-                self.bg_color = trans::color(c);
+                self.current.bg_color = trans::color(c);
             }
             (tb::Bold, cd::Underline) => {
-                self.style = tb::BoldUnderline;
+                self.current.font_options = tb::BoldUnderline;
             }
             (tb::Underline, cd::Bold) => {
-                self.style = tb::BoldUnderline;
+                self.current.font_options = tb::BoldUnderline;
             }
             (_, cd::Bold) => {
-                self.style = tb::Bold;
+                self.current.font_options = tb::Bold;
             }
             (_, cd::Underline) => {
-                self.style = tb::Underline;
+                self.current.font_options = tb::Underline;
             }
-
         }
     }
 
     fn draw_char(&mut self, x: uint, y: uint, c: char) {
-        tb::print_ch(x, y, self.style, self.fg_color, self.bg_color, c);
+        tb::print_ch(x, y,
+                     self.current.font_options,
+                     self.current.fg_color,
+                     self.current.bg_color, c);
     }
 
     fn clear(&mut self) {
@@ -66,10 +76,15 @@ impl cd::ConsoleCanvas for TermboxConsole {
         tb::present();
     }
 
-    fn clear_modifiers(&mut self) {
-        self.bg_color = tb::Black;
-        self.fg_color = tb::White;
-        self.style = tb::Normal;
+    fn push_state(&mut self) {
+        let cloned = self.current;
+        self.stack.push(cloned);
+    }
+    fn pop_state(&mut self) {
+        match self.stack.pop() {
+            Some(s) => self.current = s,
+            None => {}
+        }
     }
 
     fn supports_custom_colors(&self) -> bool { false }
