@@ -1,5 +1,4 @@
-
-extern crate console_draw_termbox;
+extern crate termbox_console;
 extern crate console_draw;
 
 use console_draw::{
@@ -9,7 +8,7 @@ use console_draw::{
     Enter,
     Backspace
 };
-use console_draw_termbox::TermboxConsole;
+use termbox_console::TermboxConsole;
 
 fn main() {
     let mut console = TermboxConsole::new();
